@@ -5,9 +5,9 @@ require_once dirname(dirname(__FILE__)) . '/class.crawler.php';
 require_once dirname(dirname(__FILE__)) . '/class.proxy.php';
 
 #$totalProcess = 50;
-$totalProcess = 5;
+$totalProcess = 50;
 
-/*for ($i = 0; $i < $totalProcess; $i++) {
+for ($i = 0; $i < $totalProcess; $i++) {
     $pid = pcntl_fork();
     set_time_limit(0);
 
@@ -21,12 +21,13 @@ $totalProcess = 5;
          //echo "child pid is " . posix_getpid() . "\n";
          crawler();
     }
-}*/
-crawler();
+}
+
+//crawler();
 
 function crawler() {
     $proxyObj = new proxy();
-    $mysqli = new mysqli('localhost', 'admin', 'txg19831210', 'crawler');
+    $mysqli = new mysqli('10.168.45.191', 'admin', 'txg19831210', 'crawler');
     $mysqli->query('SET NAMES gbk');
 
     for (;;) {
@@ -68,7 +69,6 @@ function crawler() {
         $proxy = $proxyObj->getProxy();
 
         $rand = rand(1, 100);    
-        echo $rand . "\n"; 
 
         if ($rand <= $path1) {
             $search_url = 'http://s.taobao.com/search?&initiative_id=tbindexz_'.$date.'&spm=1.7274553.1997520841.1&sourceId=tb.index&search_type=item&ssid=s5-e&commend=all&q='.$kwd.'&suggest=0_2';
