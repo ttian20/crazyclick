@@ -19,6 +19,7 @@ for ($i = 0; $i < $totalProcess; $i++) {
     }
     else {
          //echo "child pid is " . posix_getpid() . "\n";
+         sleep(1);
          crawler();
     }
 }
