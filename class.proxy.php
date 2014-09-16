@@ -20,7 +20,7 @@ class proxy {
         $content = trim($info);
         $arr = explode("\n", $content);
 
-        $params = array('host' =>'localhost',  
+        $params = array('host' =>'10.168.45.191',  
                         'port' => 5672,  
                         'login' => 'guest',  
                         'password' => 'guest',  
@@ -38,7 +38,7 @@ class proxy {
     }
 
     public function getProxy() {
-        $params = array('host' =>'localhost',  
+        $params = array('host' =>'10.168.45.191',  
                         'port' => 5672,  
                         'login' => 'guest',  
                         'password' => 'guest',  
