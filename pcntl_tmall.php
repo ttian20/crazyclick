@@ -48,7 +48,7 @@ function crawler() {
         }
     
         $ua = 'aa';
-        $proxy = $proxyObj->getProxy();
+        $proxy = $proxyObj->getProxy(true);
 
         $rand = rand(1, 100);    
             /*
@@ -77,9 +77,9 @@ function crawler() {
             //$search_url = 'http://list.tmall.com/search_product.htm?q=%C2%EA%BF%A7%BE%AB%C6%AC&type=p&vmarket=&spm=3.7396704.a2227oh.d100&from=mallfp..pc_1_searchbutton';      
             $search_url = 'http://list.tmall.com/search_product.htm?q='.$kwd.'&type=p&vmarket=&spm=3.7396704.a2227oh.d100&from=mallfp..pc_1_searchbutton';      
             $search_selector = ".product[data-id=' " . $nid . "'] div .productTitle a";
-            $next_selector = "bbb";
+            $next_selector = ".ui-page-next";
             //$cmd = "/usr/bin/casperjs --output-encoding=gbk --script-encoding=gbk --proxy=".$proxy." --cookies-file=/tmp/cookies /var/html/casperjs/pcntl_tmall.js --ignore-ssl-errors=true \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
-            $cmd = "/usr/bin/casperjs /var/html/casperjs/pcntl_tmall.js --ignore-ssl-errors=true --proxy=42.97.57.79:80 --output-encoding=gbk --script-encoding=gbk \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
+            $cmd = "/usr/bin/casperjs /var/html/casperjs/process_tmall.js --ignore-ssl-errors=true --proxy=".$proxy." --output-encoding=gbk --script-encoding=gbk \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
             //$cmd = "/usr/bin/casperjs /var/html/casperjs/pcntl_tmall.js --ignore-ssl-errors=true --output-encoding=gbk --script-encoding=gbk \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
         //}
     

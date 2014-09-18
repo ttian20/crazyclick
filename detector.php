@@ -4,44 +4,14 @@ date_default_timezone_set('Asia/Shanghai');
 require_once dirname(__FILE__) . '/class.crawler.php';
 require_once dirname(__FILE__) . '/class.proxy.php';
 
-/*$totalProcess = 50;
-echo posix_getpid() . "\n";
-
-for ($i = 0; $i < $totalProcess; $i++) {
-    $pid = pcntl_fork();
-    set_time_limit(0);
-
-    if ($pid == -1) {
-         die("could not fork\n");
-    }
-    elseif ($pid) {
-         echo "parent pid is " . posix_getpid() . "\n";
-         //echo "parent exit\n";
-         //pcntl_wait($status); //Protect against Zombie children
-    }
-    else {
-         echo "child pid is " . posix_getpid() . "\n";
-         //sleep(10);
-         //echo "child exit\n";
-         // we are the child
-         crawler();
-    }
-}*/
-
-function crawler() {
+function detector() {
     $mysqli = new mysqli('localhost', 'admin', 'txg19831210', 'crawler');
     $mysqli->query('SET NAMES gbk');
     $proxyObj = new proxy();
-    //for (;;) {
+
         $hour = date('G');
-        //$mysqli->autocommit(false);
 
         $current = time();
-        //$sql = "SELECT * FROM keyword WHERE id = 31";
-             //. "WHERE status = 'active' AND run_status = 'free' AND times > clicked_times AND begin_time < {$current} AND end_time > {$current} AND click_start < {$hour} AND click_end > {$hour} "
-             //. "WHERE status = 'active' AND times > clicked_times AND begin_time < {$current} AND end_time > {$current} "
-             //. "ORDER BY last_click_time ASC LIMIT 1 FOR UPDATE";
-        //$sql = "SELECT * FROM keyword LIMIT 1";
         $sql = "SELECT * FROM keyword WHERE is_detected = 0";
         $result = $mysqli->query($sql);
         $data = array();
@@ -52,11 +22,8 @@ function crawler() {
         }
         if (!$data) {
             echo "zz\n";
-            //$mysqli->rollback();
-            sleep(60);
-            continue ;
+            exit("Done\n");
         }
-
     
         foreach ($data as $obj) {
             echo $obj->kwd . "\n";
@@ -72,11 +39,10 @@ function crawler() {
             $sleep_time = $obj->sleep_time;
             
             $proxy = $proxyObj->getProxy();
-            $ua = 'aa';;
+            $httpsProxy = $proxyObj->getProxy(true);
+            $ua = 'aa';
 
-            //$rand = rand(1, 100);
-            //if ($rand <= $path1) {
-                #$search_url = 'http://s.taobao.com/search?&initiative_id=tbindexz_'.$date.'&spm=1.7274553.1997520841.1&sourceId=tb.index&search_type=item&ssid=s5-e&commend=all&q='.$kwd.'&suggest=0_2&_input_charset=utf-8';
+                //taobao search
                 $search_url = 'http://s.taobao.com/search?&initiative_id=tbindexz_'.$date.'&spm=1.7274553.1997520841.1&sourceId=tb.index&search_type=item&ssid=s5-e&commend=all&q='.$kwd.'&suggest=0_2';
                 $search_selector = ".item[nid='" . $nid . "'] h3 a";
                 $next_selector = ".page-next";
@@ -84,12 +50,16 @@ function crawler() {
                 $cmd = "/usr/bin/casperjs --output-encoding=gbk --script-encoding=gbk --proxy=".$proxy." /var/html/casperjs/detector.js \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
                 $path1_page = system($cmd);
                 echo $path1_page . "\n";
-                $depth = (int)$path1_page + 1;
-                $sql = "UPDATE keyword SET path1_page ={$depth} WHERE id = " . $obj->id;
-                $mysqli->query($sql);
-            //}
-            //elseif ($rand <= $path2) {
-                #$search_url = 'http://s.taobao.com/search?spm=a230r.1.0.0.9nMSJu&initiative_id=tbindexz_'.$date.'&tab=mall&q='.$kwd.'&suggest=0_2';      
+                if (!preg_match('/^[0-9]/', $path1_page)) {
+                    echo "error\n";
+                }
+                else {
+                    $depth = (int)$path1_page + 1;
+                    $sql = "UPDATE keyword SET path1_page ={$depth} WHERE id = " . $obj->id;
+                    $mysqli->query($sql);               
+                }
+
+                //taobao search tmall tab
                 $search_url = 'http://s.taobao.com/search?spm=a230r.1.0.0.9nMSJu&initiative_id=tbindexz_'.$date.'&tab=mall&q='.$kwd.'&suggest=0_2';      
                 $search_selector = ".item[nid='" . $nid . "'] h3 a";
                 $next_selector = ".page-next";
@@ -97,31 +67,35 @@ function crawler() {
                 $cmd = "/usr/bin/casperjs --output-encoding=gbk --script-encoding=gbk --proxy=".$proxy." /var/html/casperjs/detector.js \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
                 $path2_page = system($cmd);
                 echo $path2_page . "\n";
-                $depth = (int)$path2_page + 1;
-                $sql = "UPDATE keyword SET path2_page ={$depth} WHERE id = " . $obj->id;
-                $mysqli->query($sql);
+                if (!preg_match('/^[0-9]/', $path2_page)) {
+                    echo "error\n";
+                }
+                else {
+                    $depth = (int)$path2_page + 1;
+                    $sql = "UPDATE keyword SET path2_page ={$depth} WHERE id = " . $obj->id;
+                    $mysqli->query($sql);               
+                }
+
+                //tmall search
+                $search_url = 'http://list.tmall.com/search_product.htm?q='.$kwd.'&type=p&vmarket=&spm=3.7396704.a2227oh.d100&from=mallfp..pc_1_searchbutton';
+                $search_selector = ".product[data-id=' " . $nid . "'] div .productTitle a";
+                $next_selector = "a.ui-page-s-next";
+
+                $cmd = "/usr/bin/casperjs /var/html/casperjs/detector.js --ignore-ssl-errors=true --proxy=".$httpsProxy." --output-encoding=gbk --script-encoding=gbk \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
+                $path3_pate = system($cmd);
+                echo $path3_page . "\n";
+                if (!preg_match('/^[0-9]/', $path3_page)) {
+                    echo "error\n";
+                }
+                else {
+                    $depth = (int)$path3_page + 1;
+                    $sql = "UPDATE keyword SET path3_page ={$depth} WHERE id = " . $obj->id;
+                    $mysqli->query($sql);               
+                }
 
                 $sql = "UPDATE keyword SET is_detected = 1 WHERE id = " . $obj->id;
                 $mysqli->query($sql);
-            //}
-            /*else {
-                #$search_url = 'http://list.tmall.com/search_product.htm?q='.$kwd.'&type=p&vmarket=&spm=3.7396704.a2227oh.d100&from=mallfp..pc_1_searchbutton&_input_charset=utf-8';
-                #$search_url = 'http://list.tmall.com/search_product.htm?q='.$kwd.'&type=p&vmarket=&spm=3.7396704.a2227oh.d100&from=mallfp..pc_1_searchbutton';
-                //$search_url = 'http://list.tmall.com/search_product.htm?q='.$kwd.'&user_action=initiative&at_topsearch=1&sort=st&type=p&cat=all&vmarket=';
-                $search_url = iconv('UTF-8', 'GBK', $obj->kwd);
-                $search_selector = ".product[data-id=' " . $nid . "'] div .productTitle a";
-                $next_selector = ".ui-page-next";
 
-                $cmd = "/usr/bin/casperjs --output-encoding=gbk --script-encoding=gbk --proxy=".$proxy." /var/html/casperjs/pcntl_tmall.js \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
-            }*/
-
-
-            #$cmd = "/usr/bin/casperjs --proxy=".$proxy." /var/html/casperjs/pcntl.js \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time;
-            //echo $cmd . "\n";
-            //system($cmd);
-            //$sql = "UPDATE keyword SET clicked_times = clicked_times + 1, last_click_time = " . time() .", run_status = 'free' WHERE id = " . $obj->id;
-            //$mysqli->query($sql);
         }
-    //}
 }
-crawler();
+detector();

@@ -1,6 +1,6 @@
 var casper = require('casper').create({
     verbose: true,
-    logLevel: 'info',
+    logLevel: 'debug',
     pageSettings: {
         userAgent: 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.2; .NET4.0C; .NET4.0E)'
     }
@@ -19,11 +19,55 @@ var search_times = 0;
 
 casper.start(search_url);
 
+/*
+casper.then(function() {
+    casper.waitFor(function(){
+        this.scrollToBottom();
+        if (this.exists(next_selector)) {
+            console.log("yes\n");
+        }
+        else {
+            console.log("no\n");
+        }
+        casper.exit();   
+    });
+});
+casper.exit();   
+
+casper.then(function(){
+    if (this.exists(next_selector)) {
+        console.log("yes\n");
+    }
+    else {
+        console.log("no\n");
+    }
+    casper.exit();
+});
+*/
+
 search(0);
 function search(flag) {
     if (flag) {
-        casper.wait(2000, function(){
-            this.click(next_selector);
+        casper.wait(1000, function(){
+            if (this.exists(next_selector)) {
+                res = casper.evaluate(function(f){
+                    document.querySelector(f).setAttribute('target', '_self');
+                    var arr = new Array();
+                    arr[0] = document.querySelector(f).getAttribute('target');
+                    arr[1] = document.querySelector(f).getAttribute('href');
+                    //return document.querySelector(f).getAttribute('target');
+                    return arr;
+                }, next_selector);
+                console.log(res[0]);
+                console.log(res[1]);
+
+                this.scrollToBottom();
+                this.click(next_selector);
+            }
+            else {
+                console.log(10);
+                casper.exit();
+            }
         });
     }
     casper.then(function(){

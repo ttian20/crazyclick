@@ -17,50 +17,17 @@ class crawler {
         //save proxy
     }
 
-    public function _getProxy() {
-        $url = 'http://www.tkdaili.com/api/getiplist.aspx?vkey=2C777C9751352F3D8C99355ED68252A2&num=1&country=CN&high=1&style=2';
-        //echo trim(file_get_contents($url));
-        //exit;
-        $userAgent = 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.2; .NET4.0C; .NET4.0E)';
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-        curl_setopt($ch, CURLOPT_USERAGENT, $userAgent); 
-        $info = curl_exec($ch);
-        if(curl_errno($ch))
-        {
-            echo curl_error($ch);
-        }
-        curl_close($ch);
-        $proxy = trim($info);
-        if (!$proxy || !$this->_testProxy($proxy)) {
-            echo $proxy . " time out\n";
-            return $this->_getProxy();
-        }
-        else {
-            return $proxy;
-        }
-    }
+    public function buildSearchUrl($data) {
+        switch ($data['path']) {
+            case 'taobao':
+            case 'taobao2tmall':
+                if ($data['region'] && $data['price_from'] && $data['price_to']) {
+                }
+                
+                break;
+            case 'tmall':
 
-    public function _testProxy($proxy) {
-        //$url = 'http://www.baidu.com/img/baidu_jgylogo3.gif';
-        $url = 'http://www.taobao.com?spm=1.7274553.1997517345.1.7V4oN5';
-        $ch = curl_init();
-        $timeout = 3;
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-        curl_setopt($ch, CURLOPT_PROXY, $proxy);
-        $info = curl_exec($ch);
-        if(curl_errno($ch))
-        {
-            echo curl_error($ch);
-            curl_close($ch);
-            return false;
-        }
-        else {
-            curl_close($ch);
-            return true;
+                break;
         }
     }
 
