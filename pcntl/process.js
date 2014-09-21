@@ -14,6 +14,7 @@ var search_url = casper.cli.get(0);
 var search_selector = casper.cli.get(1);
 var next_selector = casper.cli.get(2)
 var sleep_time = parseInt(casper.cli.get(3)) * 1000;
+var shop_type = '';
 
 var search_times = 0;
 
@@ -39,6 +40,13 @@ function search(flag) {
             }, search_selector);
             console.log(res[0]);
             console.log(res[1]);
+            if (res[1].indexOf("detail.tmall.com/") != -1) {
+                shop_type = 'b';
+            }
+            else {
+                shop_type = 'c';
+            }
+            console.log(shop_type);
             this.wait(1000, function(){
                 this.click(search_selector);
             });
@@ -56,75 +64,156 @@ function search(flag) {
 }
 
 casper.then(function(){
-    title = casper.evaluate(function(){
-        var aele = document.querySelectorAll('a');
-        for (var i = 0, len = aele.length; i < len; i++) {
-            aele[i].setAttribute('target', '_self');
-        }
-
-        return document.title;
-    });
-    console.log(title);
-    console.log(this.getCurrentUrl()); 
-
-    if (this.exists(".slogo-shopname")) {
-        this.wait(sleep_time, function(){
-            this.click(".slogo-shopname");
-        });
-    }
-    else {
-        casper.exit();
-    }
+    left(shop_type);
 });
 
-casper.then(function(){
-    title = casper.evaluate(function(){
-        var aele = document.querySelectorAll('a');
-        for (var i = 0, len = aele.length; i < len; i++) {
-            aele[i].setAttribute('target', '_self');
+function left(shop_type) {
+if (shop_type == 'b') {
+    casper.then(function(){
+        title = casper.evaluate(function(){
+            var aele = document.querySelectorAll('a');
+            for (var i = 0, len = aele.length; i < len; i++) {
+                aele[i].setAttribute('target', '_self');
+            }
+    
+            return document.title;
+        });
+        console.log(title);
+        console.log(this.getCurrentUrl()); 
+    
+        if (this.exists(".slogo-shopname")) {
+            this.wait(sleep_time, function(){
+                this.click(".slogo-shopname");
+            });
         }
-        return document.title;
-    });
-    console.log(title);
-    console.log(this.getCurrentUrl()); 
-
-    /*if (this.exists("a[href*='tmall.com/p/']")) {
-        this.wait(10000, function(){
-            this.click("a[href*='tmall.com/p/']");
-        });
-    }*/
-
-    if (this.exists("a[href*='tmall.com/category-']")) {
-        this.wait(10000, function(){
-            this.click("a[href*='tmall.com/category-']");
-        });
-    }
-    else {
-        casper.exit();
-    }
-});
-
-casper.then(function(){
-    console.log(this.getCurrentUrl()); 
-    casper.evaluate(function(){
-        var aele = document.querySelectorAll('a');
-        for (var i = 0, len = aele.length; i < len; i++) {
-            aele[i].setAttribute('target', '_self');
+        else {
+            casper.exit();
         }
     });
-    if (this.exists("a[href^='http://detail.tmall.com/item.htm']")) {
-        this.wait(5000, function(){
-            this.click("a[href^='http://detail.tmall.com/item.htm']");
+    
+    casper.then(function(){
+        title = casper.evaluate(function(){
+            var aele = document.querySelectorAll('a');
+            for (var i = 0, len = aele.length; i < len; i++) {
+                aele[i].setAttribute('target', '_self');
+            }
+            return document.title;
         });
-    }
-    else {
+        console.log(title);
+        console.log(this.getCurrentUrl()); 
+    
+        /*if (this.exists("a[href*='tmall.com/p/']")) {
+            this.wait(10000, function(){
+                this.click("a[href*='tmall.com/p/']");
+            });
+        }*/
+    
+        if (this.exists("a[href*='tmall.com/category-']")) {
+            this.wait(10000, function(){
+                this.click("a[href*='tmall.com/category-']");
+            });
+        }
+        else {
+            casper.exit();
+        }
+    });
+    
+    casper.then(function(){
+        console.log(this.getCurrentUrl()); 
+        casper.evaluate(function(){
+            var aele = document.querySelectorAll('a');
+            for (var i = 0, len = aele.length; i < len; i++) {
+                aele[i].setAttribute('target', '_self');
+            }
+        });
+        if (this.exists("a[href^='http://detail.tmall.com/item.htm']")) {
+            this.wait(5000, function(){
+                this.click("a[href^='http://detail.tmall.com/item.htm']");
+            });
+        }
+        else {
+            casper.exit();
+        }
+    });
+    
+    casper.then(function(){
+        console.log(this.getCurrentUrl()); 
         casper.exit();
-    }
-});
-
-casper.then(function(){
-    console.log(this.getCurrentUrl()); 
-    casper.exit();
-});
+    });
+}
+else {
+    casper.then(function(){
+        title = casper.evaluate(function(){
+            var aele = document.querySelectorAll('a');
+            for (var i = 0, len = aele.length; i < len; i++) {
+                aele[i].setAttribute('target', '_self');
+            }
+    
+            return document.title;
+        });
+        console.log(title);
+        console.log(this.getCurrentUrl()); 
+    
+        if (this.exists(".tb-shop-name a")) {
+            this.wait(sleep_time, function(){
+                this.click(".tb-shop-name a");
+            });
+        }
+        else {
+            casper.exit();
+        }
+    });
+    
+    casper.then(function(){
+        title = casper.evaluate(function(){
+            var aele = document.querySelectorAll('a');
+            for (var i = 0, len = aele.length; i < len; i++) {
+                aele[i].setAttribute('target', '_self');
+            }
+            return document.title;
+        });
+        console.log(title);
+        console.log(this.getCurrentUrl()); 
+    
+        /*if (this.exists("a[href*='tmall.com/p/']")) {
+            this.wait(10000, function(){
+                this.click("a[href*='tmall.com/p/']");
+            });
+        }*/
+    
+        if (this.exists("a[href*='taobao.com/category.htm']")) {
+            this.wait(10000, function(){
+                this.click("a[href*='taobao.com/category.htm']");
+            });
+        }
+        else {
+            casper.exit();
+        }
+    });
+    
+    casper.then(function(){
+        console.log(this.getCurrentUrl()); 
+        casper.evaluate(function(){
+            var aele = document.querySelectorAll('a');
+            for (var i = 0, len = aele.length; i < len; i++) {
+                aele[i].setAttribute('target', '_self');
+            }
+        });
+        if (this.exists("a[href^='http://item.taobao.com/item.htm']")) {
+            this.wait(5000, function(){
+                this.click("a[href^='http://item.taobao.com/item.htm']");
+            });
+        }
+        else {
+            casper.exit();
+        }
+    });
+    
+    casper.then(function(){
+        console.log(this.getCurrentUrl()); 
+        casper.exit();
+    });
+}
+}
 
 casper.run();

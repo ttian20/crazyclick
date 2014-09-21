@@ -18,6 +18,7 @@ class crawler {
     }
 
     public function buildSearchUrl($data) {
+        $kwd = urlencode($data['kwd']);
         switch ($data['path']) {
             case 'taobao':
             case 'taobao2tmall':
@@ -26,7 +27,13 @@ class crawler {
                 
                 break;
             case 'tmall':
-
+                $search_url = 'http://list.tmall.com/search_product.htm?q='.$kwd.'&type=p&vmarket=&spm=3.7396704.a2227oh.d100&from=mallfp..pc_1_searchbutton';
+                if ($data['price_from']) {
+                    $search_url .= '&start_price=' . $data['price_from'];
+                }
+                if ($data['price_to']) {
+                    $search_url .= '&end_price=' . $data['price_to'];
+                }
                 break;
         }
     }

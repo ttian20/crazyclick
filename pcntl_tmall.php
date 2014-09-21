@@ -1,7 +1,7 @@
 <?php
 set_time_limit(0);
 date_default_timezone_set('Asia/Shanghai');
-require_once dirname(__FILE__) . '/class.crawler.php';
+require_once dirname(__FILE__) . '/class.keyword.php';
 require_once dirname(__FILE__) . '/class.proxy.php';
 
 crawler();
@@ -51,41 +51,6 @@ function crawler() {
         $proxy = $proxyObj->getProxy(true);
 
         $rand = rand(1, 100);    
-            /*
-            $search_url = 'http://s.taobao.com/search?&initiative_id=tbindexz_'.$date.'&spm=1.7274553.1997520841.1&sourceId=tb.index&search_type=item&ssid=s5-e&commend=all&q='.$kwd.'&suggest=0_2';
-            $search_selector = ".item[nid='" . $nid . "'] h3 a";
-            $next_selector = ".page-next";
-        
-            $cmd = "/usr/bin/casperjs --output-encoding=gbk --script-encoding=gbk --proxy=".$proxy." /var/html/casperjs/pcntl/process.js \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
-            */
 
-        /*if ($rand <= $path1) {
-            $search_url = 'http://s.taobao.com/search?&initiative_id=tbindexz_'.$date.'&spm=1.7274553.1997520841.1&sourceId=tb.index&search_type=item&ssid=s5-e&commend=all&q='.$kwd.'&suggest=0_2';
-            $search_selector = ".item[nid='" . $nid . "'] h3 a";
-            $next_selector = ".page-next";
-        
-            $cmd = "/usr/bin/casperjs --output-encoding=gbk --script-encoding=gbk --proxy=".$proxy." /var/html/casperjs/pcntl/process.js \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
-        }
-        else {
-            $search_url = 'http://s.taobao.com/search?spm=a230r.1.0.0.9nMSJu&initiative_id=tbindexz_'.$date.'&tab=mall&q='.$kwd.'&suggest=0_2';      
-            $search_selector = ".item[nid='" . $nid . "'] h3 a";
-            $next_selector = ".page-next";
-        
-            $cmd = "/usr/bin/casperjs --output-encoding=gbk --script-encoding=gbk --proxy=".$proxy." /var/html/casperjs/pcntl/process.js \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
-        }
-        else {*/
-            //$search_url = 'http://list.tmall.com/search_product.htm?q=%C2%EA%BF%A7%BE%AB%C6%AC&type=p&vmarket=&spm=3.7396704.a2227oh.d100&from=mallfp..pc_1_searchbutton';      
-            $search_url = 'http://list.tmall.com/search_product.htm?q='.$kwd.'&type=p&vmarket=&spm=3.7396704.a2227oh.d100&from=mallfp..pc_1_searchbutton';      
-            $search_selector = ".product[data-id=' " . $nid . "'] div .productTitle a";
-            $next_selector = ".ui-page-next";
-            //$cmd = "/usr/bin/casperjs --output-encoding=gbk --script-encoding=gbk --proxy=".$proxy." --cookies-file=/tmp/cookies /var/html/casperjs/pcntl_tmall.js --ignore-ssl-errors=true \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
-            $cmd = "/usr/bin/casperjs /var/html/casperjs/process_tmall.js --ignore-ssl-errors=true --proxy=".$proxy." --output-encoding=gbk --script-encoding=gbk \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
-            //$cmd = "/usr/bin/casperjs /var/html/casperjs/pcntl_tmall.js --ignore-ssl-errors=true --output-encoding=gbk --script-encoding=gbk \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
-        //}
-    
-        echo $cmd . "\n";
-        system($cmd);
-        //$sql = "UPDATE keyword SET clicked_times = clicked_times + 1, run_status = 'free' WHERE id = " . $obj->id;
-        //$mysqli->query($sql);
     //}
 }
