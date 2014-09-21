@@ -4,7 +4,6 @@ date_default_timezone_set('Asia/Shanghai');
 require_once dirname(dirname(__FILE__)) . '/class.keyword.php';
 require_once dirname(dirname(__FILE__)) . '/class.proxy.php';
 
-/*
 $totalProcess = 50;
 for ($i = 0; $i < $totalProcess; $i++) {
     $pid = pcntl_fork();
@@ -22,20 +21,18 @@ for ($i = 0; $i < $totalProcess; $i++) {
          crawler();
     }
 }
-*/
-crawler();
+//crawler();
 
 function crawler() {
     $proxyObj = new proxy();
     $mysqli = new mysqli('10.168.45.191', 'admin', 'txg19831210', 'crawler');
     $mysqli->query('SET NAMES gbk');
 
-    //for (;;) {
+    for (;;) {
         $hour = date('G');
         $current = time();
 
-        #$sql = "SELECT * FROM keyword WHERE status = 'active' AND clicked_times < times AND ((last_click_time + click_interval) < {$current}) AND ((path1_page < 5 AND path1_page > 0) OR (path2_page < 5 AND path2_page > 0) OR (path3_page < 5 AND path3_page > 0)) ORDER BY last_click_time ASC LIMIT 1";
-        $sql = "SELECT * FROM keyword WHERE id = 48";
+        $sql = "SELECT * FROM keyword WHERE status = 'active' AND clicked_times < times AND ((last_click_time + click_interval) < {$current}) AND ((path1_page < 5 AND path1_page > 0) OR (path2_page < 5 AND path2_page > 0) OR (path3_page < 5 AND path3_page > 0)) ORDER BY last_click_time ASC LIMIT 1";
         $result = $mysqli->query($sql);
         $data = array();
         if ($result) {
@@ -137,5 +134,5 @@ function crawler() {
         system($cmd);
         $sql = "UPDATE keyword SET clicked_times = clicked_times + 1 WHERE id = " . $obj->id;
         $mysqli->query($sql);
-    //}
+    }
 }
