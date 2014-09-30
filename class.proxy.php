@@ -12,7 +12,7 @@ class proxy {
             $routerName = 'proxy_https';
         }
         else {
-            $url = 'http://www.tkdaili.com/api/getiplist.aspx?vkey=2C777C9751352F3D8C99355ED68252A2&num=120&country=CN&high=1&style=2';
+            $url = 'http://www.tkdaili.com/api/getiplist.aspx?vkey=2C777C9751352F3D8C99355ED68252A2&num=100&country=CN&high=1&style=2';
             $exchangeName = 'e_proxy';
             $queueName = 'q_proxy';
             $routerName = 'proxy';

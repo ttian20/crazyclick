@@ -1,6 +1,3 @@
-var args = phantom.args;
-console.log('phantom.args:',args);
-
 var casper = require('casper').create({
     verbose: true,
     logLevel: 'debug',
@@ -11,16 +8,18 @@ var casper = require('casper').create({
 var title;
 var target;
 
-var search_url = casper.cli.get(0);
-var search_selector = casper.cli.get(1);
-var next_selector = casper.cli.get(2)
-var sleep_time = parseInt(casper.cli.get(3));
+var item_url = 'http://detail.tmall.com/item.htm?spm=a230r.1.14.210.8vWc5l&id=37191891128';
+//var search_url = casper.cli.get(0);
+//var search_selector = casper.cli.get(1);
+//var next_selector = casper.cli.get(2)
+//var sleep_time = parseInt(casper.cli.get(3));
 
-casper.start(search_url);
+casper.start(item_url);
 
 casper.then(function(){
     title = casper.evaluate(function(){
-        return document.title;
+        return document.querySelector("span.tm-price").innerHTML;
+        //return document.title;
     });
     casper.log(title);
     casper.exit();

@@ -55,7 +55,7 @@ function detector() {
                 }
                 else {
                     $depth = (int)$path1_page + 1;
-                    $sql = "UPDATE keyword SET path1_page ={$depth} WHERE id = " . $obj->id;
+                    $sql = "UPDATE keyword SET path1_page ={$depth} WHERE id = " . $obj->id ." AND (path1_page > {$depth} OR path1_page = -1)";
                     $mysqli->query($sql);               
                 }
 
@@ -72,7 +72,7 @@ function detector() {
                 }
                 else {
                     $depth = (int)$path2_page + 1;
-                    $sql = "UPDATE keyword SET path2_page ={$depth} WHERE id = " . $obj->id;
+                    $sql = "UPDATE keyword SET path2_page ={$depth} WHERE id = " . $obj->id ." AND (path2_page > {$depth} OR path2_page = -1)";
                     $mysqli->query($sql);               
                 }
 
@@ -82,14 +82,14 @@ function detector() {
                 $next_selector = "a.ui-page-s-next";
 
                 $cmd = "/usr/bin/casperjs /var/html/casperjs/detector.js --ignore-ssl-errors=true --proxy=".$httpsProxy." --output-encoding=gbk --script-encoding=gbk \"".$search_url."\" "." \"" . $search_selector . "\" " . "\"" . $next_selector . "\" " . $sleep_time . " \"" . $ua . "\"";
-                $path3_pate = system($cmd);
+                $path3_page = system($cmd);
                 echo $path3_page . "\n";
                 if (!preg_match('/^[0-9]/', $path3_page)) {
                     echo "error\n";
                 }
                 else {
                     $depth = (int)$path3_page + 1;
-                    $sql = "UPDATE keyword SET path3_page ={$depth} WHERE id = " . $obj->id;
+                    $sql = "UPDATE keyword SET path3_page ={$depth} WHERE id = " . $obj->id ." AND (path3_page > {$depth} OR path3_page = -1)";
                     $mysqli->query($sql);               
                 }
 

@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Shanghai');
 require_once dirname(dirname(__FILE__)) . '/class.keyword.php';
 require_once dirname(dirname(__FILE__)) . '/class.proxy.php';
 
-$totalProcess = 50;
+/*$totalProcess = 50;
 for ($i = 0; $i < $totalProcess; $i++) {
     $pid = pcntl_fork();
     set_time_limit(0);
@@ -20,23 +20,20 @@ for ($i = 0; $i < $totalProcess; $i++) {
          sleep(1);
          crawler();
     }
-}
-
-//crawler();
+}*/
+crawler();
 
 function crawler() {
     $proxyObj = new proxy();
     $mysqli = new mysqli('10.168.45.191', 'admin', 'txg19831210', 'crawler');
     $mysqli->query('SET NAMES gbk');
-    $today = strtotime(date("Y-m-d"));
 
-    for (;;) {
+    //for (;;) {
         $hour = date('G');
         $current = time();
 
-        $sql = "SELECT * FROM keyword "
-             . "WHERE status = 'active' AND begin_time <= {$today} AND end_time >= {$today} AND click_start <= {$hour} AND click_end > {$hour} "
-             . "AND clicked_times < times AND ((last_click_time + click_interval) < {$current}) AND ((path1_page < 5 AND path1_page > 0) OR (path2_page < 5 AND path2_page > 0) OR (path3_page < 5 AND path3_page > 0)) ORDER BY last_click_time ASC LIMIT 1 FOR UPDATE";
+        //$sql = "SELECT * FROM keyword WHERE status = 'active' AND clicked_times < times AND ((last_click_time + click_interval) < {$current}) AND ((path1_page < 5 AND path1_page > 0) OR (path2_page < 5 AND path2_page > 0) OR (path3_page < 5 AND path3_page > 0)) ORDER BY last_click_time ASC LIMIT 1";
+        $sql = "SELECT * FROM keyword WHERE id = 13 LIMIT 1";
         $result = $mysqli->query($sql);
         $data = array();
         if ($result) {
@@ -64,6 +61,7 @@ function crawler() {
             $keyword = new keyword();
 
             $rand = rand(1, 100);
+            $rand = 5;
             if ($rand <= $path1) {
                 //taobao search
                 $data = array(
@@ -74,12 +72,14 @@ function crawler() {
                     'price_from' => $obj->path1_price_from,
                     'price_to' => $obj->path1_price_to,
                 );
+                $search_url = $keyword->buildSearchUrl($data);
+                echo $search_url . "\n";
+                exit;
                 if ($obj->path1_page >= 5) {
                     continue;
                 }
-                $proxy = $proxyObj->getProxy();
-                #$search_url = 'http://s.taobao.com/search?&initiative_id=tbindexz_'.$date.'&spm=1.7274553.1997520841.1&sourceId=tb.index&search_type=item&ssid=s5-e&commend=all&q='.$kwd.'&suggest=0_2';
-                $search_url = $keyword->buildSearchUrl($data);
+                //$proxy = $proxyObj->getProxy();
+                //$search_url = 'http://s.taobao.com/search?&initiative_id=tbindexz_'.$date.'&spm=1.7274553.1997520841.1&sourceId=tb.index&search_type=item&ssid=s5-e&commend=all&q='.$kwd.'&suggest=0_2';
                 $search_selector = ".item[nid='" . $nid . "'] h3 a";
                 $next_selector = ".page-next";
             
@@ -87,20 +87,11 @@ function crawler() {
             }
             elseif ($rand <= $path2) {
                 //taobao search tmall tab
-                $data = array(
-                    'path' => 'taobao2tmall',
-                    'kwd' => $kwd,
-                    'date' => $date,
-                    'region' => $obj->path2_region,
-                    'price_from' => $obj->path2_price_from,
-                    'price_to' => $obj->path2_price_to,
-                );
                 if ($obj->path2_page >= 5) {
                     continue;
                 }
                 $proxy = $proxyObj->getProxy();
-                #$search_url = 'http://s.taobao.com/search?spm=a230r.1.0.0.9nMSJu&initiative_id=tbindexz_'.$date.'&tab=mall&q='.$kwd.'&suggest=0_2';      
-                $search_url = $keyword->buildSearchUrl($data);
+                $search_url = 'http://s.taobao.com/search?spm=a230r.1.0.0.9nMSJu&initiative_id=tbindexz_'.$date.'&tab=mall&q='.$kwd.'&suggest=0_2';      
                 $search_selector = ".item[nid='" . $nid . "'] h3 a";
                 $next_selector = ".page-next";
             
@@ -108,21 +99,12 @@ function crawler() {
             }
             else {
                 //tmall search
-                $data = array(
-                    'path' => 'tmall',
-                    'kwd' => $kwd,
-                    'date' => $date,
-                    'region' => $obj->path3_region,
-                    'price_from' => $obj->path3_price_from,
-                    'price_to' => $obj->path3_price_to,
-                );
                 if ($obj->path3_page >= 5) {
                     continue;
                 }
                 $proxy = $proxyObj->getProxy(true);
 
-                #$search_url = 'http://list.tmall.com/search_product.htm?q='.$kwd.'&type=p&vmarket=&spm=3.7396704.a2227oh.d100&from=mallfp..pc_1_searchbutton';
-                $search_url = $keyword->buildSearchUrl($data);
+                $search_url = 'http://list.tmall.com/search_product.htm?q='.$kwd.'&type=p&vmarket=&spm=3.7396704.a2227oh.d100&from=mallfp..pc_1_searchbutton';
                 $search_selector = ".product[data-id=' " . $nid . "'] div .productTitle a";
                 $next_selector = "a.ui-page-s-next";
 
@@ -132,10 +114,11 @@ function crawler() {
             $sql = "UPDATE keyword SET last_click_time = {$current} WHERE id = {$obj->id}";
             $mysqli->query($sql);
         }
+
     
         echo $cmd . "\n";
         system($cmd);
         $sql = "UPDATE keyword SET clicked_times = clicked_times + 1 WHERE id = " . $obj->id;
         $mysqli->query($sql);
-    }
+    //}
 }
